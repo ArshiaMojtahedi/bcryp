@@ -4,6 +4,7 @@ import mss
 import pyautogui
 import time
 import sys
+from random import choice
 from random import randint
 import yaml
 #import requests
@@ -263,10 +264,14 @@ def refreshHeroes():
     solveCapModule.solveCaptcha()
     goToHeroes()
     solveCapModule.solveCaptcha()
+    
+    select_heroes = ["full","green","all"]
+    selected = choice(select_heroes)
+    print(selected)
 
-    if c['select_heroes_mode'] == "full":
+    if selected == "full":
         logger("Sending heroes with full stamina bar to work!")
-    elif c['select_heroes_mode'] == "green":
+    elif selected == "green":
         logger("Sending heroes with green stamina bar to work!")
     else:
         logger("Sending all heroes to work!")
@@ -275,9 +280,9 @@ def refreshHeroes():
     empty_scrolls_attempts = c['scroll_attemps']
 
     while(empty_scrolls_attempts >0):
-        if c['select_heroes_mode'] == 'full':
+        if selected == 'full':
             buttonsClicked = clickFullBarButtons()
-        elif c['select_heroes_mode'] == 'green':
+        elif selected ==  'green':
             buttonsClicked = clickGreenBarButtons()
         else:
             buttonsClicked = clickButtons()
