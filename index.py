@@ -125,9 +125,7 @@ def clickBtn(img,name=None, timeout=3, threshold = ct['default']):
             if(hast_timed_out):
                 if not name is None:
                     pass
-                    # print('timed out')
                 return False
-            # print('button not found yet')
             continue
 
         x,y,w,h = matches[0]
@@ -139,11 +137,6 @@ def printSreen():
     with mss.mss() as sct:
         monitor = sct.monitors[1]
         sct_img = np.array(sct.grab(monitor))
-        # The screen part to capture
-        #monitor = {"top": 160, "left": 160, "width": 1000, "height": 135}
-
-        # Grab the data
-        #sct_img = np.array(sct.grab(sct.monitors[0]))
         return sct_img[:,:,:3]
 
 def positions(target, threshold=ct['default']):
@@ -166,11 +159,9 @@ def scroll():
 
     commoms = positions(commom_img, threshold = ct['commom'])
     if (len(commoms) == 0):
-        # print('no commom text found')
         return
     x,y,w,h = commoms[len(commoms)-1]
-    # print('moving to {},{} and scrolling'.format(x,y))
-#
+
     pyautogui.moveTo(x,y,1)
 
     if not c['use_click_and_drag_instead_of_scroll']:
@@ -181,13 +172,11 @@ def scroll():
 
 def clickButtons():
     buttons = positions(go_work_img, threshold=ct['go_to_work_btn'])
-    # print('buttons: {}'.format(len(buttons)))
     for (x, y, w, h) in buttons:
         pyautogui.moveTo(x+(w/2),y+(h/2),1)
         pyautogui.click()
         global hero_clicks
         hero_clicks = hero_clicks + 1
-        #cv2.rectangle(sct_img, (x, y) , (x + w, y + h), (0,255,255),2)
         if hero_clicks > 20:
             logger('too many hero clicks, try to increase the go_to_work_btn threshold')
             return
@@ -204,7 +193,6 @@ def isWorking(bar, buttons):
     return True
 
 def clickGreenBarButtons():
-    # ele clicka nos q tao trabaiano mas axo q n importa
     offset = 130
     green_bars = positions(green_bar, threshold=ct['green_bar'])
     logger('%d green bars detected' % len(green_bars))
@@ -219,9 +207,7 @@ def clickGreenBarButtons():
         logger('%d buttons with green bar detected' % len(not_working_green_bars))
         logger('Clicking in %d heroes.' % len(not_working_green_bars))
 
-    # se tiver botao com y maior que bar y-10 e menor que y+10
     for (x, y, w, h) in not_working_green_bars:
-        # isWorking(y, buttons)
         pyautogui.moveTo(x+offset+(w/2),y+(h/2),1)
         pyautogui.click()
         global hero_clicks
@@ -229,7 +215,6 @@ def clickGreenBarButtons():
         if hero_clicks > 20:
             logger('too many hero clicks, try to increase the go_to_work_btn threshold')
             return
-        #cv2.rectangle(sct_img, (x, y) , (x + w, y + h), (0,255,255),2)
     return len(not_working_green_bars)
 
 def clickFullBarButtons():
@@ -254,26 +239,27 @@ def clickFullBarButtons():
     return len(not_working_full_bars)
 
 def goToHeroes():
+    solveCapcha()                    
     if clickBtn(arrow_img):
         global login_attempts
         login_attempts = 0
 
-    # time.sleep(5)
     clickBtn(hero_img)
-    # time.sleep(5)
 
 def goToGame():
-    # in case of server overload popup
+    solveCapcha()                    
     clickBtn(x_button_img)
-    # time.sleep(3)
+    solveCapcha()                
     clickBtn(x_button_img)
-
+    solveCapcha()                
     clickBtn(teasureHunt_icon_img)
 
 def refreshHeroesPositions():
+    solveCapcha()                    
     clickBtn(arrow_img)
+    solveCapcha()                    
     clickBtn(teasureHunt_icon_img)
-    # time.sleep(3)
+    solveCapcha()                    
     clickBtn(teasureHunt_icon_img)
 
 def login():
@@ -510,7 +496,6 @@ def main():
     }
 
     while True:
-        solveCapcha()                
         now = time.time()
 
         if now - last["heroes"] > randint(8,12) * 60:
