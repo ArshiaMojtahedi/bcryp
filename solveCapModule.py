@@ -7,6 +7,7 @@ import sys
 from random import randint
 import yaml
 #import requests
+import logger
 
 puzzle_img = cv2.imread('targets/puzzle.png')
 piece = cv2.imread('targets/piece.png')
@@ -15,6 +16,7 @@ slider = cv2.imread('targets/slider.png')
 stream = open("config.yaml", 'r')
 c = yaml.safe_load(stream)
 ct = c['threshold']
+number_of_matchs = 0
 
 def printSreen():
     with mss.mss() as sct:
@@ -61,13 +63,14 @@ def findPuzzlePieces(result, piece_img, threshold=0.5):
         r.append([int(piece_x), int(piece_y), int(piece_w), int(piece_h)])
     r, weights = cv2.groupRectangles(r, 1, 0.2)
     if len(r) < 2:
-        print('threshold = %.3f' % threshold)
+        logger.logger('threshold = %.3f' % threshold)
         return findPuzzlePieces(result, piece_img,threshold-0.01)
     if len(r) == 2:
-        print('match')
+        print(number_of_matchs)
+        logger.logger('match -> total of matchs is ',number_of_matchs)
         return r
     if len(r) > 2:
-        print('overshoot by %d' % len(r))
+        logger.logger('overshoot by %d' % len(r))
         return r
 
 def getRightPiece(puzzle_pieces):
@@ -95,7 +98,7 @@ def show(rectangles, img = None):
 def getPiecesPosition(t = 150):
     popup_pos = positions(robot)
     if len(popup_pos) == 0:
-        print('puzzle not found')
+        logger.logger('puzzle not found')
         return
     rx, ry, _, _ = popup_pos[0]
     w = 380
